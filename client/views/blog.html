@@ -1,0 +1,203 @@
+<template name="BlogPage">
+  <div class="container">
+    <h1>Blog Page</h1>
+    {{pageData.description}}
+  </div>
+  <div class="container">
+    {{> PostsList}}
+  </div>
+</template>
+
+<template name="PostsList">
+  {{#if currentUser}}
+    <a href="{{pathFor 'PostSubmit'}}"><button class="btn btn-accent btn-fab btn-fab-mini pull-right"><i class="mdi-content-add-box"></i></button></a>
+  {{/if}}
+  <h3>Posts</h3>
+  {{#each posts}}
+    {{> PostItem}}
+  {{/each}}
+  {{#if nextPath}}
+    <a href="{{nextPath}}" class="load-more btn btn-block btn-primary">Load more</a>
+  {{else}}
+    {{#unless ready}}
+      {{> spinner}}
+    {{/unless}}
+  {{/if}}
+</template>
+
+<template name="PostItem">
+  <div class="post panel panel-primary">
+    <div class="panel-heading post-content">
+      <div class="row">
+        <div class="col-sm-1 col-md-1 col-lg-1">
+          <button class="upvote btn btn-fab btn-fab-mini pull-left {{upvotedClass}}"><i class="mdi-hardware-keyboard-arrow-up"></i></button>
+        </div>
+        <div class="col-sm-9 col-md-9 col-lg-9">
+          <h4><a href="{{url}}">{{title}} <small>{{domain}}</small> </a></h4>
+          <p>
+            {{pluralize votes "Vote"}},
+            <span class="text-muted">submitted by</span> {{author}},
+            <a href="{{pathFor 'PostPage'}}">{{pluralize commentsCount "comment"}}</a>
+          </p>
+        </div>
+        <div class="col-sm-1 col-md-1 col-lg-1">
+          {{#if ownPost}}
+          <a class="pull-right" href="{{pathFor 'PostEdit'}}"><button class="btn btn-material-yellow btn-fab btn-fab-mini"><i class="mdi-editor-mode-edit"></i></button></a>
+          {{/if}}
+        </div>
+        <div class="col-sm-1 col-md-1 col-lg-1">
+          <a href="{{pathFor 'PostPage'}}"><button class="btn btn-material-blue btn-fab btn-fab-mini pull-right"><i class="mdi-communication-messenger"></i></button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="PostPage">
+  <div class="container">
+    <h1>{{title}}</h1>
+    <p><span class="text-muted">submitted by</span> {{author}} <span class="text-muted">on</span> {{submittedText}}</p>
+    <div class="panel panel-primary">
+      <div class="panel-body">
+        <div class="list-group comments">
+          {{#each comments}}
+          {{> Comment}}
+          {{/each}}
+        </div>
+      </div>
+      <div class="panel-footer">
+        {{#if currentUser}}
+        {{> CommentsSubmit}}
+        {{else}}
+        <p class="text-muted">Please log in to leave a comments.</p>
+        {{/if}}
+      </div>
+
+    </div>
+  </div>
+</template>
+
+<template name="CommentsSubmit">
+  <form class="form-horizontal" name="comment">
+    <div class="form-group form-group-primary">
+      <label for="commentArea" class="col-lg-2 col-md-2 col-sm-2 control-label">Comment</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" rows="3" name="comment" id="commentArea" placeholder="Comment"></textarea>
+        <span class="help-block"></span>
+      </div>
+      <div class="form-group form-group-primary">
+        <div class="col-lg-10 col-md-10 col-sm-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-2">
+          <button type="submit" class="btn btn-primary">Add comment</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+</template>
+
+<template name="Comment">
+  <div class="list-group-item">
+    <div class="row-picture">
+      {{!-- <img src="http://lorempixel.com/56/56/people/1" alt="icon"> --}}
+      {{> avatar userId=userId shape="circle" initials="A" bgColor="rgba(0,10,40,.6)"}}
+    </div>
+    <div class="row-content">
+      <h4 class="list-group-item-heading"><span class="author">{{author}}</span> <small class="submitted">on {{submittedText}}</small></h4>
+      <p class="list-group-item-text">{{body}}</p>
+    </div>
+  </div>
+</template>
+
+<template name="DataNotFound">
+  <div class="container">
+    <div class="alert alert-danger">Data not found. What ?!</div>
+  </div>
+</template>
+
+<template name="PostSubmit">
+  <div class="container">
+    <h1>Post Submit</h1>
+    <div class="panel panel-primary">
+      <div class="panel-body">
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>New Post</legend>
+            <div class="form-group form-group-primary">
+              <label for="inputEmail" class="col-lg-2 col-md-2 col-sm-2 control-label">URL</label>
+              <div class="col-lg-10 col-md-10 col-sm-10">
+                <input type="url" class="form-control" name="url" id="inputURL" placeholder="URL">
+              </div>
+            </div>
+            <div class="form-group form-group-primary">
+              <label for="inputTitle" class="col-lg-2 col-md-2 col-sm-2 control-label">Title</label>
+              <div class="col-lg-10 col-md-10 col-sm-10">
+                <input type="text" class="form-control" name="title" id="inputTitle" placeholder="Title">
+              </div>
+            </div>
+            <div class="form-group form-group-primary">
+              <label for="messageArea" class="col-lg-2 col-md-2 col-sm-2 control-label">Message</label>
+              <div class="col-lg-10">
+                <textarea class="form-control" rows="3" name="message" id="messageArea" placeholder="Message"></textarea>
+                <span class="help-block"></span>
+              </div>
+            </div>
+            <div class="form-group form-group-primary">
+              <div class="col-lg-10 col-md-10 col-sm-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-2">
+                <button type="reset" class="btn btn-default">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="PostEdit">
+  <div class="container">
+    <div class="panel panel-primary">
+      <div class="panel-body">
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Edit Post</legend>
+            <div class="form-group form-group-primary">
+              <label for="inputEmail" class="col-lg-2 col-md-2 col-sm-2 control-label">URL</label>
+              <div class="col-lg-10 col-md-10 col-sm-10">
+                <input type="url" class="form-control" name="url" id="inputURL" placeholder="URL" value="{{url}}">
+              </div>
+            </div>
+            <div class="form-group form-group-primary">
+              <label for="inputTitle" class="col-lg-2 col-md-2 col-sm-2 control-label">Title</label>
+              <div class="col-lg-10 col-md-10 col-sm-10">
+                <input type="text" class="form-control" name="title" id="inputTitle" placeholder="Title" value="{{title}}">
+              </div>
+            </div>
+            <div class="form-group form-group-primary">
+              <label for="messageArea" class="col-lg-2 col-md-2 col-sm-2 control-label">Message</label>
+              <div class="col-lg-10">
+                <textarea class="form-control" rows="3" name="message" id="messageArea" placeholder="Message">{{message}}</textarea>
+                <span class="help-block"></span>
+              </div>
+            </div>
+            <div class="form-group form-group-primary">
+              <div class="col-lg-7 col-md-7 col-sm-7 col-lg-offset-2 col-md-offset-2 col-sm-offset-2">
+                <button type="reset" class="btn btn-default">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+              <div class="col-lg-3 col-md-3 col-sm-3">
+                <button type="submit" class="btn btn-danger btn-delete">Delete</button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="AccessDenied">
+  <div class="container">
+    <div class="alert alert-danger">Accenss Denied</div>
+  </div>
+</template>
