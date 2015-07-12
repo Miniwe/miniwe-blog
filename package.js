@@ -13,6 +13,7 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
   api.use(['coffeescript', 'templating', 'mongo', 'underscore', 'iron:router', 'miniwe:helpers'], ['server','client']);
+  api.use(['anti:fake'], ['server']);
   api.addFiles([
     'lib/collections/blog_posts.coffee',
     'lib/collections/blog_comments.coffee',
@@ -20,6 +21,7 @@ Package.onUse(function(api) {
     'lib/blog_router.coffee'
   ], ['client', 'server']);
   api.addFiles([
+    'client/views/comments.html',
     'client/views/blog.html',
     'client/views/blog.coffee',
     'client/views/comments.coffee'
