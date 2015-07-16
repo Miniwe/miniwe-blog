@@ -2,11 +2,25 @@ if Posts.find().count() == 0
   now = new Date().getTime()
 
   tomId = Meteor.users.insert
-    profile: {name: 'Tom Coleman'}
+    createdAt: now
+    profile: {username: 'Tom Coleman'}
+    emails: [
+      {
+        address: 'tom@coleman.com'
+        verified: false
+      }
+    ]
   tom = Meteor.users.findOne tomId
 
   sachaId = Meteor.users.insert
-    profile: {name: 'Sacha Greiff'}
+    createdAt: now
+    profile: {username: 'Sacha Greiff'}
+    emails: [
+      {
+        address: 'sacha@greiff.com'
+        verified: false
+      }
+    ]
   sacha = Meteor.users.findOne sachaId
 
   telescopeId = Posts.insert
